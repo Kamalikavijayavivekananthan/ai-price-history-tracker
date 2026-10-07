@@ -1,0 +1,295 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply font-sans bg-slate-50 text-slate-800 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100;
+    font-family: 'Inter', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', sans-serif;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────
+   GLASSMORPHISM
+───────────────────────────────────────────────────────── */
+.glass-panel {
+  @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-lg dark:bg-slate-900/60 dark:border-slate-800/40;
+}
+
+.glass-panel-interactive {
+  @apply glass-panel hover:bg-white/90 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 dark:hover:bg-slate-900/80;
+}
+
+/* ─────────────────────────────────────────────────────────
+   SCROLLBAR
+───────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { @apply bg-slate-100 dark:bg-slate-900; }
+::-webkit-scrollbar-thumb { @apply bg-slate-300 rounded-full hover:bg-slate-400 dark:bg-slate-700 dark:hover:bg-slate-600 transition-colors; }
+
+/* ─────────────────────────────────────────────────────────
+   KEYFRAME ANIMATIONS
+───────────────────────────────────────────────────────── */
+
+/* Fade In Up — used for page entries */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Fade In — simple opacity */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Slide In From Left */
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.animate-slide-in-left {
+  animation: slideInLeft 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Slide In From Right */
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.animate-slide-in-right {
+  animation: slideInRight 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Scale In — for cards/modals */
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.animate-scale-in {
+  animation: scaleIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Stagger delay helpers */
+.stagger-1 { animation-delay: 0.05s; opacity: 0; }
+.stagger-2 { animation-delay: 0.1s;  opacity: 0; }
+.stagger-3 { animation-delay: 0.15s; opacity: 0; }
+.stagger-4 { animation-delay: 0.2s;  opacity: 0; }
+.stagger-5 { animation-delay: 0.25s; opacity: 0; }
+.stagger-6 { animation-delay: 0.3s;  opacity: 0; }
+
+/* ─────────────────────────────────────────────────────────
+   PULSE / GLOW
+───────────────────────────────────────────────────────── */
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.25); }
+  50%       { box-shadow: 0 0 0 8px rgba(244, 63, 94, 0); }
+}
+.animate-pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+@keyframes pricePulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.04); }
+}
+.animate-price-pulse {
+  animation: pricePulse 2s ease-in-out infinite;
+}
+
+/* ─────────────────────────────────────────────────────────
+   SHIMMER SKELETON LOADER
+───────────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg,
+    rgba(226, 232, 240, 0.6) 25%,
+    rgba(241, 245, 249, 0.9) 50%,
+    rgba(226, 232, 240, 0.6) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+  @apply rounded-xl;
+}
+.dark .skeleton {
+  background: linear-gradient(90deg,
+    rgba(30, 41, 59, 0.6) 25%,
+    rgba(51, 65, 85, 0.8) 50%,
+    rgba(30, 41, 59, 0.6) 75%
+  );
+  background-size: 200% 100%;
+}
+
+/* ─────────────────────────────────────────────────────────
+   HERO GRADIENT ORBS
+───────────────────────────────────────────────────────── */
+.hero-orb-1 {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(244,63,94,0.12) 0%, transparent 70%);
+  border-radius: 50%;
+  top: -120px;
+  right: -120px;
+  pointer-events: none;
+  animation: orbFloat1 8s ease-in-out infinite;
+}
+.hero-orb-2 {
+  position: absolute;
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, rgba(251,191,36,0.10) 0%, transparent 70%);
+  border-radius: 50%;
+  bottom: -80px;
+  left: -80px;
+  pointer-events: none;
+  animation: orbFloat2 10s ease-in-out infinite;
+}
+.hero-orb-3 {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  top: 50%;
+  left: 30%;
+  pointer-events: none;
+  animation: orbFloat3 12s ease-in-out infinite;
+}
+@keyframes orbFloat1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-20px, 20px) scale(1.05); }
+  66% { transform: translate(10px, -10px) scale(0.98); }
+}
+@keyframes orbFloat2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(15px, -20px) scale(1.08); }
+}
+@keyframes orbFloat3 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-25px, 15px); }
+}
+
+/* ─────────────────────────────────────────────────────────
+   GRADIENT TEXT
+───────────────────────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #f43f5e 0%, #f59e0b 50%, #f43f5e 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 4s linear infinite;
+}
+@keyframes gradientShift {
+  0%   { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+/* ─────────────────────────────────────────────────────────
+   BADGE ANIMATIONS
+───────────────────────────────────────────────────────── */
+@keyframes badgeBounce {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.12); }
+}
+.badge-hot {
+  animation: badgeBounce 1.8s ease-in-out infinite;
+}
+
+/* ─────────────────────────────────────────────────────────
+   CARD HOVER 3D EFFECT
+───────────────────────────────────────────────────────── */
+.card-3d {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+}
+.card-3d:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.15), 0 8px 24px -4px rgba(244, 63, 94, 0.1);
+}
+.dark .card-3d:hover {
+  box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.5), 0 8px 24px -4px rgba(244, 63, 94, 0.15);
+}
+
+/* ─────────────────────────────────────────────────────────
+   BUTTON PREMIUM STYLES
+───────────────────────────────────────────────────────── */
+.btn-primary {
+  @apply relative inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-bold text-white rounded-xl transition-all duration-300 overflow-hidden;
+  background: linear-gradient(135deg, #f43f5e, #f59e0b);
+  box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3);
+}
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #fb7185, #fbbf24);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.btn-primary:hover::before { opacity: 1; }
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 25px rgba(244, 63, 94, 0.4);
+}
+.btn-primary:active { transform: translateY(0); }
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-bold rounded-xl transition-all duration-300 border;
+  @apply bg-white text-slate-800 border-slate-200 hover:bg-slate-50 hover:border-slate-300;
+  @apply dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 dark:hover:bg-slate-700;
+}
+
+/* ─────────────────────────────────────────────────────────
+   NOTIFICATION ANIMATION
+───────────────────────────────────────────────────────── */
+@keyframes bellRing {
+  0%, 100% { transform: rotate(0deg); }
+  10%        { transform: rotate(18deg); }
+  20%        { transform: rotate(-14deg); }
+  30%        { transform: rotate(10deg); }
+  40%        { transform: rotate(-8deg); }
+  50%        { transform: rotate(5deg); }
+  60%        { transform: rotate(0deg); }
+}
+.bell-ring:hover svg {
+  animation: bellRing 0.7s ease-in-out;
+}
+
+/* ─────────────────────────────────────────────────────────
+   STAT COUNTER CARD
+───────────────────────────────────────────────────────── */
+.stat-card {
+  @apply glass-panel p-6 rounded-2xl flex items-center justify-between;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+}
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.12);
+}
+
+/* ─────────────────────────────────────────────────────────
+   INPUT FOCUS RING  
+───────────────────────────────────────────────────────── */
+.input-field {
+  @apply w-full px-4 py-3 bg-slate-100/50 border border-slate-200 dark:border-slate-800/60 dark:bg-slate-900/60 rounded-xl outline-none text-sm transition-all duration-200;
+  @apply focus:ring-2 focus:ring-rose-500/25 focus:border-rose-500;
+}
+.input-field::placeholder {
+  @apply text-slate-400;
+}
