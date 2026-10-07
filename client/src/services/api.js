@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'https://ai-price-history-tracker.onrender.com/api',,
+  baseURL: 'https://ai-price-history-tracker.onrender.com/api',
 });
 
 // Automatically inject JWT Token if available in localStorage
