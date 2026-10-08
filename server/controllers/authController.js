@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
+
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 
@@ -13,70 +13,67 @@ const generateToken = (id) => {
 // Helper to generate a 6-digit OTP
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
 
-// Helper to send OTP email — tries port 465 (SSL) first, falls back to port 587 (TLS)
+// Helper to send OTP email using Resend
 const sendOtpEmail = async (email, name, otp) => {
-  const configs = [
-    { host: 'smtp.gmail.com', port: 465, secure: true },
-    { host: 'smtp.gmail.com', port: 587, secure: false },
-  ];
-
-  let lastError;
-  for (const cfg of configs) {
-    try {
-      const transporter = nodemailer.createTransport({
-        ...cfg,
-        auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
-        connectionTimeout: 10000,
-        greetingTimeout: 10000,
-        socketTimeout: 15000,
-      });
-
-      await transporter.sendMail({
-    from: `"SmartDeal AI" <${process.env.EMAIL_USER}>`,
-    to: email,
-    subject: '🔐 Your OTP for SmartDeal AI Registration',
-    html: `
-      <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 520px; margin: 0 auto; background: #0f172a; border-radius: 16px; overflow: hidden;">
-        <!-- Header -->
-        <div style="background: linear-gradient(135deg, #f43f5e, #f59e0b); padding: 32px 40px; text-align: center;">
-          <h1 style="margin: 0; color: #ffffff; font-size: 26px; font-weight: 800; letter-spacing: -0.5px;">SmartDeal AI 🛒</h1>
-          <p style="margin: 6px 0 0; color: rgba(255,255,255,0.85); font-size: 14px;">AI-Powered Price Tracker</p>
-        </div>
-
-        <!-- Body -->
-        <div style="padding: 36px 40px;">
-          <p style="color: #cbd5e1; font-size: 16px; margin: 0 0 8px;">Hi <strong style="color: #f8fafc;">${name}</strong>,</p>
-          <p style="color: #94a3b8; font-size: 14px; margin: 0 0 28px; line-height: 1.6;">
-            Use the OTP below to verify your email and complete your registration. This code is valid for <strong style="color: #f8fafc;">10 minutes</strong>.
-          </p>
-
-          <!-- OTP Box -->
-          <div style="background: #1e293b; border: 2px solid #f43f5e; border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 28px;">
-            <p style="color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 12px;">Your Verification Code</p>
-            <span style="font-size: 42px; font-weight: 900; letter-spacing: 10px; color: #f43f5e; font-family: 'Courier New', monospace;">${otp}</span>
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: 'SmartDeal AI <onboarding@resend.dev>',
+      to: [email],
+      subject: '🔐 Your OTP for SmartDeal AI Registration',
+      html: `
+        <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 520px; margin: 0 auto; background: #0f172a; border-radius: 16px; overflow: hidden;">
+          <div style="background: linear-gradient(135deg, #f43f5e, #f59e0b); padding: 32px 40px; text-align: center;">
+            <h1 style="margin: 0; color: #ffffff; font-size: 26px;">SmartDeal AI 🛒</h1>
+            <p style="margin: 6px 0 0; color: rgba(255,255,255,0.85); font-size: 14px;">AI-Powered Price Tracker</p>
           </div>
 
-          <p style="color: #64748b; font-size: 12px; text-align: center; margin: 0;">
-            ⚠️ Never share this OTP with anyone. SmartDeal AI will never ask for it.
-          </p>
-        </div>
+          <div style="padding: 36px 40px;">
+            <p style="color: #cbd5e1; font-size: 16px;">
+              Hi <strong style="color: #f8fafc;">${name}</strong>,
+            </p>
 
-        <!-- Footer -->
-        <div style="background: #0f172a; border-top: 1px solid #1e293b; padding: 20px 40px; text-align: center;">
-          <p style="color: #475569; font-size: 11px; margin: 0;">© ${new Date().getFullYear()} SmartDeal AI · AI-powered price intelligence for smart Indian shoppers</p>
+            <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">
+              Use the OTP below to verify your email and complete your registration.
+              This code is valid for <strong style="color: #f8fafc;">10 minutes</strong>.
+            </p>
+
+            <div style="background: #1e293b; border: 2px solid #f43f5e; border-radius: 12px; padding: 24px; text-align: center; margin: 28px 0;">
+              <p style="color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;">
+                Your Verification Code
+              </p>
+
+              <span style="font-size: 42px; font-weight: 900; letter-spacing: 10px; color: #f43f5e; font-family: 'Courier New', monospace;">
+                ${otp}
+              </span>
+            </div>
+
+            <p style="color: #64748b; font-size: 12px; text-align: center;">
+              ⚠️ Never share this OTP with anyone.
+            </p>
+          </div>
+
+          <div style="background: #0f172a; border-top: 1px solid #1e293b; padding: 20px 40px; text-align: center;">
+            <p style="color: #475569; font-size: 11px;">
+              © ${new Date().getFullYear()} SmartDeal AI
+            </p>
+          </div>
         </div>
-      </div>
       `,
-      });
-      return; // success — exit
-    } catch (err) {
-      lastError = err;
-      console.warn(`[OTP EMAIL] Failed on port ${cfg.port}: ${err.message}. Trying next...`);
-    }
-  }
-  throw lastError; // all configs failed
-};
+    }),
+  });
 
+  if (!response.ok) {
+    const errorData = await response.text();
+    throw new Error(`Resend API error: ${errorData}`);
+  }
+
+  return await response.json();
+};
 // @desc    Register a new user (Step 1 — sends OTP, does NOT log in)
 // @route   POST /api/auth/register
 // @access  Public
@@ -112,7 +109,7 @@ exports.registerUser = async (req, res) => {
     );
 
     // Send OTP email (non-blocking — email failure must NOT crash registration)
-    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+    if (process.env.RESEND_API_KEY) {
       try {
         await sendOtpEmail(email, name, otp);
         console.log(`[OTP SENT] OTP email sent to ${email}`);
@@ -214,7 +211,7 @@ exports.resendOtp = async (req, res) => {
     user.otpExpiry = otpExpiry;
     await user.save();
 
-    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+    if (process.env.RESEND_API_KEY) {
       try {
         await sendOtpEmail(email, user.name, otp);
         console.log(`[OTP RESENT] New OTP sent to ${email}`);
