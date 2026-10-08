@@ -3,6 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const { initCronJobs, runPriceTrackingCycle } = require('./cronjobs/priceCron');
+const seedDatabase = require('./seeder');
 
 // Load environment variables
 dotenv.config();
@@ -54,8 +55,15 @@ app.use((err, req, res, next) => {
 
 // Start Server
 const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, async () => {
   console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+
+  // Seed products automatically if database is empty
+  try {
+    await seedDatabase();
+  } catch (error) {
+    console.error(`Automatic seeding failed: ${error.message}`);
+  }
   
   // Start background price update cron scheduler
   initCronJobs();
