@@ -43,11 +43,16 @@ const seedDatabase = async () => {
     });
     console.log('Connected to Database for seeding...');
 
-    // Clear existing
-    await Product.collection.dropIndexes();
-    await Product.deleteMany();
-    await PriceHistory.deleteMany();
-    console.log('Cleared existing products and history log.');
+        // Only seed when products collection is empty
+    const existingProducts = await Product.countDocuments();
+
+   if (existingProducts > 0) {
+  console.log(`Products already exist (${existingProducts}). Skipping seed.`);
+  await mongoose.connection.close();
+  return;
+}
+
+    console.log('Products collection is empty. Starting seed...');
 
     // Fetch and save each product
     for (const data of products) {
@@ -59,12 +64,17 @@ const seedDatabase = async () => {
       await generateHistoricalData(product._id, product.stores);
     }
 
-    console.log(`Seeder successfully executed! Seeded ${products.length} products with 30-day price histories.`);
-    process.exit();
+   console.log(`Seeder successfully executed! Seeded ${products.length} products with 30-day price histories.`);
+await mongoose.connection.close();
+process.exit(0);
   } catch (error) {
     console.error(`Seeder failed: ${error.message}`);
     process.exit(1);
   }
 };
 
-seedDatabase();
+module.exports = seedDatabase;
+
+if (require.main === module) {
+  seedDatabase();
+}
