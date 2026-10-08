@@ -48,7 +48,6 @@ const seedDatabase = async () => {
 
    if (existingProducts > 0) {
   console.log(`Products already exist (${existingProducts}). Skipping seed.`);
-  await mongoose.connection.close();
   return;
 }
 
@@ -65,8 +64,7 @@ const seedDatabase = async () => {
     }
 
    console.log(`Seeder successfully executed! Seeded ${products.length} products with 30-day price histories.`);
-await mongoose.connection.close();
-process.exit(0);
+return;
   } catch (error) {
     console.error(`Seeder failed: ${error.message}`);
     process.exit(1);
